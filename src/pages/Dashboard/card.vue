@@ -6,7 +6,7 @@
           <div class="card-icon">
             <md-icon>assignment</md-icon>
           </div>
-          <h4 class="title">Paginated Tables</h4>
+          <h4 class="title">Card User Details</h4>
         </md-card-header>
         <md-card-content>
           <md-table
@@ -46,7 +46,7 @@
 
             <md-table-row slot="md-table-row" slot-scope="{ item }">
               <md-table-cell md-label="First Name" md-sort-by="firstName">
-                {{ item.user.firstName }}
+                {{ item.user.firstName }}{{ item.user.lastName }}
               </md-table-cell>
               <md-table-cell md-label="Email" md-sort-by="email">{{
                 item.user.email
@@ -75,6 +75,27 @@
               </md-table-cell>
             </md-table-row>
           </md-table>
+
+
+          <md-dialog :md-active.sync="showCard" class="cardToken" >
+                    <div id="printMe">
+                      <div class="logo-img">
+                        <img :src="imgLogo" alt="">
+                      </div>
+                <!-- <div class="cardholder">Name : {{name}}</div> -->
+                      <div class= "cashBox">
+                        <div class="cardAddress">
+                          <p class= "cardValue">{{address}}</p>
+                        </div>
+                        <div class="qrcode">
+                          <qrcode :value="encryptedkey" :options="{ size: 200 }" tag="img"></qrcode>
+                        </div><br>
+                      </div>
+                    </div>   
+                    <div class="md-layout-item md-size-100 text-right">
+                      <md-button @click="print" >Print </md-button>
+                    </div>             
+                  </md-dialog> 
           <!-- <div class="footer-table md-table">
             <table>
               <tfoot>
@@ -94,6 +115,8 @@
               </tfoot>
             </table>
           </div> -->
+
+          
         </md-card-content>
         <md-card-actions md-alignment="space-between">
           <div class="">
@@ -123,6 +146,26 @@ import axios from 'axios';
 // const CONFIG = params.params; 
 
 export default {
+data() {
+        return {
+            
+            cardName:[],
+            id: null,
+            showCard: false,
+            address: null,
+            name: null,
+            encryptedkey: null,
+            
+             }
+        }, 
+ props: {
+          // imgLogo: {
+          //   type: String,
+          //   default: require('/public/img/logo.png')
+          //   }
+      },
+        
+
   components: {
     Pagination
   },
@@ -204,12 +247,20 @@ export default {
         confirmButtonClass: "md-button md-success"
       });
     },
-    handleEdit(item) {
-      swal({
-        title: `You want to edit ${item.name}`,
-        buttonsStyling: false,
-        confirmButtonClass: "md-button md-info"
-      });
+      handleEdit(item) {
+      console.log('p',item)
+            this.encryptedkey = item.data
+             this.address = item.address 
+            if(this.encryptedkey) {
+                 this.showCard = true
+                 this.id = item._id
+                if(item.accountType != 'Company') {
+                    this.name = item.firstName + ' ' + item.lastName
+                }
+                else if(item.accountType == 'Company') {
+                    this.name = item.companyName
+                }
+            }
     },
     handleDelete(item) {
       swal({
@@ -241,7 +292,38 @@ export default {
       if (indexToDelete >= 0) {
         this.tableData.splice(indexToDelete, 1);
       }
-    }
+    },
+
+
+
+    print() {
+            this.$htmlToPaper('printMe');
+            const token = window.localStorage.getItem('token')
+            console.log('id',this.id)
+            let data = {} 
+            data.status = 'Printed'
+            data.data = this.encryptedkey
+            axios.post("http://localhost:3201/api/delivered/"+this.id,data,{headers:{'x-access-token': token}})          
+            .then((response) => {
+            console.log("Delivered",response.data)
+//         this.$router.push('/card')
+
+//         window.matchMedia('print').addListener(function (media) {
+
+//       if(media.matches){
+
+//       }
+//       else{
+//            window.location.reload(true);
+//             //location.reload();
+//       }
+//    });
+
+    })
+    .catch((error) => {
+      console.log("error",error);
+    });
+        }
   },
   mounted() {
     // Fuse search initialization.
@@ -273,4 +355,38 @@ export default {
   margin-left: 20px;
   margin-right: 20px;
 }
+
+
+  .cardAddress {
+    position: relative;
+    top: 228px;
+    width: 77% !important;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .qrcode {
+    position: relative;
+    bottom: 42px;
+}
+
+  .cardValue {
+    word-wrap: break-word !important;
+  }
+  .cashBox {
+    position: relative;
+    /* border: double; */
+    height: 82% !important;
+    margin-left: auto;
+    margin-right: auto;
+    width: 71%;
+  }
+  .logo-img {
+    width: 90px;
+    margin-left: auto;
+    margin-right: auto;
+}
+  .cardholder {
+      text-align: center;
+  }
 </style>

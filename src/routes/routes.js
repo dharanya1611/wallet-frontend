@@ -48,7 +48,10 @@ import userDetails from "@/pages/Dashboard/userDetails.vue";
 import overedit from "@/pages/Dashboard/overedit.vue";
 import companyList from "@/pages/Dashboard/companyList.vue";
 import editcompany from "@/pages/Dashboard/editcompany.vue";
+import addcompany from "@/pages/Dashboard/addcompany.vue";
 import card from "@/pages/Dashboard/card.vue";
+import transfer from "@/pages/Dashboard/transfer.vue";
+
 import ecash from "@/pages/Dashboard/ecash.vue";
 import token from "@/pages/Dashboard/token.vue";
 
@@ -268,6 +271,10 @@ const routes = [
         components: { default: companyList }
       },
       {
+        path: "addcompany",
+        components: { default: addcompany }
+      },
+      {
         path: "editcompany/:id",
         components: { default: editcompany }
       },
@@ -283,6 +290,10 @@ const routes = [
       {
         path: "card",
         components: { default: card }
+      },
+      {
+        path: "transfer",
+        components: { default: transfer }
       },
       {
         path: "calendar",

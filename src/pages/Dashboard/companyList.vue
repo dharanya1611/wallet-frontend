@@ -6,17 +6,39 @@
           <div class="card-icon">
             <md-icon>assignment</md-icon>
           </div>
-          <h4 class="title">Paginated Tables</h4>
+          <h4 class="title">Company details</h4>
+
+           <md-button class="md-info"
+                 style="float:right"
+                  @click="addcompany"
+         
+      
+         >
+                <span class="md-label">
+                  <md-icon class="material-icons">priority_high</md-icon>
+                </span>
+               ADD COMPANY
+              </md-button>
         </md-card-header>
+        
         <md-card-content>
+
+
+                
           <md-table
             :value="queriedData"
             :md-sort.sync="currentSort"
             :md-sort-order.sync="currentSortOrder"
             :md-sort-fn="customSort"
             class="paginated-table table-striped table-hover"
+       
+       
           >
+
+
             <md-table-toolbar>
+ 
+
               <md-field>
                 <label for="pages">Per page</label>
                 <md-select v-model="pagination.perPage" name="pages">
@@ -32,6 +54,8 @@
               </md-field>
 
               <md-field>
+
+                
                 <md-input
                   type="search"
                   class="mb-3"
@@ -188,6 +212,20 @@ export default {
     };
   },
   methods: {
+
+
+        addcompany() {
+           
+            
+            var app=this;
+
+            
+           
+
+                app.$router.push('/addcompany')
+           
+          
+     },
     customSort(value) {
       return value.sort((a, b) => {
         const sortBy = this.currentSort;
